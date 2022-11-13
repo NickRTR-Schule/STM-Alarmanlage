@@ -7,7 +7,10 @@
 int main()
 {
     DigitalOut sirene(PC_0);
-    DigitalOut test(PC_3);
+
+    DigitalOut gelb(PC_1);
+    DigitalOut rot(PC_2);
+    DigitalOut blau(PC_3);
 
     DigitalIn button(PB_0);
     button.mode(PullDown);
@@ -21,15 +24,12 @@ int main()
     DigitalIn mikrofon(PB_2);
     mikrofon.mode(OpenDrain);
 
-    DigitalOut gelb(PC_1);
-    DigitalOut rot(PC_2);
-    DigitalOut blau(PC_3);
-
     DigitalOut status(LED1);
 
-    bool scharf = false;
+    bool scharf = false; // Alarmanlage ist Anfangs ausgeschalten
 
     while (true) {
+        // Button schält Alarmanlage scharf und nicht scharf
         if (button == 0) {
             scharf = !scharf;
             thread_sleep_for(20);
@@ -39,10 +39,12 @@ int main()
 
         if (scharf == true) {
             status = true;
+            // wenn die Alarmanlage scharf ist und magnet, lichtschranke oder Mikrofon ausgelöst haben ertönt der Alarm
             if (magnet == 0 || lichtschranke == 1 || mikrofon == 0) {
                 sirene = true;
             }
         } else {
+            // Wird die Alarmanlage abgestellt verstummt der Alarm
             status = false;
             sirene = false;
         }
